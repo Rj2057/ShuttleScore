@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --font-outfit: 'Outfit', system-ui, sans-serif;
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+  --court-green: #16a34a;
+  --court-dark: #14532d;
+  --shuttle-gold: #f59e0b;
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-dm-sans);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: #f1f5f9;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.font-display {
+  font-family: var(--font-outfit);
+}
+
+/* Live indicator pulse */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.live-pulse {
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+/* Bracket connector lines */
+.bracket-connector {
+  background: linear-gradient(90deg, transparent, rgb(71 85 105 / 0.6), transparent);
+}
+
+/* Group card hover */
+.group-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.group-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.3);
+}
+
+/* Match button press */
+.match-btn:active {
+  transform: scale(0.98);
+}
