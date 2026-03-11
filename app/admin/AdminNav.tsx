@@ -23,7 +23,7 @@ export default function AdminNav() {
   }
 
   return (
-    <header className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur border-b border-slate-700">
+    <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-700">
       <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link href="/" className="font-display font-semibold text-court-400">

@@ -25,7 +25,7 @@ function BracketMatch({
   if (isChampion) {
     const champion = match.winner_id ? (match.team1_id === match.winner_id ? t1 : t2) : null;
     return (
-      <div className="relative z-10 rounded-xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-950/80 via-amber-900/40 to-slate-900 px-6 py-5 text-center shadow-xl shadow-amber-500/10">
+      <div className="relative z-0 rounded-xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-950/80 via-amber-900/40 to-slate-900 px-6 py-5 text-center shadow-xl shadow-amber-500/10">
         <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-amber-500/5 to-transparent" />
         <p className="relative text-amber-400 text-xs font-bold uppercase tracking-[0.2em] mb-2">
           Champion
@@ -39,7 +39,7 @@ function BracketMatch({
 
   return (
     <div
-      className={`relative z-10 rounded-xl border overflow-hidden min-w-[150px] sm:min-w-[170px] max-w-[210px] transition-all duration-200 ${
+      className={`relative z-0 rounded-xl border overflow-hidden min-w-[150px] sm:min-w-[170px] max-w-[210px] transition-all duration-200 ${
         isLive
           ? "border-court-500 bg-court-900/50 shadow-lg shadow-court-500/25 ring-2 ring-court-500/40"
           : "border-slate-600/80 bg-slate-800/95 hover:border-slate-500/80 hover:shadow-md"
@@ -108,7 +108,7 @@ export function PlayoffBracket({ matches }: PlayoffBracketProps) {
 
   return (
     <div className="overflow-x-auto pb-6 -mx-2 px-2">
-      <div className="bracket-wrapper relative min-w-full py-6">
+      <div className="bracket-wrapper relative z-0 min-w-full py-6">
         <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch gap-6 lg:gap-4 xl:gap-8 justify-center">
           {/* Quarter Finals */}
           <div className="flex flex-col items-center bracket-column">

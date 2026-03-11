@@ -49,7 +49,7 @@ export default function LivePage() {
 
   return (
     <main className="min-h-screen">
-      <header className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur border-b border-slate-700">
+      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Link href="/" className="text-court-400 hover:text-court-300 font-display font-semibold text-sm sm:text-base order-2 sm:order-1">
