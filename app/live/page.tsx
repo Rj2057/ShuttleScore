@@ -21,12 +21,20 @@ export default function LivePage() {
       .from("tournaments")
       .select("*")
       .order("created_at", { ascending: false })
-      .then(({ data }) => setTournaments(data || []));
+      .then(({ data }) => {
+        const list = data || [];
+        setTournaments(list);
+        if (list.length > 0) {
+          setSelectedId((prev) => prev || list[0].id);
+        }
+      });
   }, []);
 
-  const { groups, standingsByGroup } = useGroupStandings(selectedId);
+  const activeTournamentId = selectedId || tournaments[0]?.id || null;
 
-  const { matches, teams, loading } = useRealtimeMatches(selectedId);
+  const { groups, standingsByGroup } = useGroupStandings(activeTournamentId);
+
+  const { matches, teams, loading } = useRealtimeMatches(activeTournamentId);
 
   const leagueMatches = matches.filter((m) => m.stage === "group");
   const playoffMatches = matches.filter((m) => ["quarter", "semi", "final"].includes(m.stage));
@@ -37,7 +45,7 @@ export default function LivePage() {
   const teamsByGroup = (groupId: string) =>
     Object.values(teams).filter((t) => t.group_id === groupId);
 
-  const currentTournament = tournaments.find((t) => t.id === selectedId);
+  const currentTournament = tournaments.find((t) => t.id === activeTournamentId);
 
   return (
     <main className="min-h-screen">
@@ -49,11 +57,11 @@ export default function LivePage() {
             </Link>
             <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:items-center order-1 sm:order-2">
               <select
-                value={selectedId || ""}
+                value={activeTournamentId || ""}
                 onChange={(e) => setSelectedId(e.target.value || null)}
                 className="w-full sm:min-w-[220px] bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 sm:py-2 text-white text-base"
               >
-                <option value="">Select tournament</option>
+                {tournaments.length === 0 && <option value="">No tournaments available</option>}
                 {tournaments.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name} - {t.season}
@@ -71,14 +79,14 @@ export default function LivePage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-8">
-        {!selectedId ? (
-          <div className="text-center py-16">
-            <p className="text-slate-400 text-lg mb-2">Select a tournament to view live scores</p>
-            <p className="text-slate-500 text-sm">Choose from the dropdown above</p>
-          </div>
-        ) : loading ? (
+        {loading && activeTournamentId ? (
           <div className="flex justify-center py-20">
             <div className="w-10 h-10 border-2 border-court-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : !activeTournamentId ? (
+          <div className="text-center py-16">
+            <p className="text-slate-400 text-lg mb-2">No tournament found yet</p>
+            <p className="text-slate-500 text-sm">Create a tournament from the admin panel to start live scoring.</p>
           </div>
         ) : (
           <>

@@ -10,7 +10,7 @@ export default function AdminTournamentPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [newName, setNewName] = useState("");
+  const [newName, setNewName] = useState("Lakshmi Hegde Pg Badminton Tournament");
   const [newSeason, setNewSeason] = useState("Season 2");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");

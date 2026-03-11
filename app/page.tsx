@@ -5,7 +5,7 @@ export default function HomePage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-4">
       <div className="max-w-2xl w-full text-center space-y-8">
         <h1 className="font-display text-4xl md:text-6xl font-bold text-white drop-shadow-lg">
-          ShuttleScore
+          Lakshmi Hegde PG
         </h1>
         <h2 className="font-display text-3xl md:text-5xl font-extrabold text-court-400">
           Badminton Tournament
