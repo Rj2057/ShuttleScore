@@ -80,9 +80,6 @@ export default function GroupStandings({ group, standings }: GroupStandingsProps
           </tbody>
         </table>
       </div>
-      <div className="mt-2 text-xs text-gray-600">
-        <p>M=Matches, W=Wins, L=Losses, PF=Points For, PA=Points Against, PD=Point Difference, PTS=Total Points</p>
-      </div>
     </div>
   );
 }

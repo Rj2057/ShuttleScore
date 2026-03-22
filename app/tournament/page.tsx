@@ -4,7 +4,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import MatchTable from "@/components/TournamentMatchTable";
+import MatchManagement from "@/components/MatchManagement";
+import TeamAssignment from "@/components/TeamAssignment";
 import GroupStandings from "@/components/GroupStandings";
 
 export default function TournamentPage() {
@@ -12,7 +13,7 @@ export default function TournamentPage() {
   const [tournament, setTournament] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [currentStage, setCurrentStage] = useState<
-    "league" | "loser" | "group" | "quarterfinal" | "semifinal" | "final" | "standings"
+    "league" | "loser" | "group" | "quarterfinal" | "semifinal" | "final" | "standings" | "manage-teams"
   >("league");
 
   // Initialize tournament
@@ -126,90 +127,93 @@ export default function TournamentPage() {
         {/* Control Panel */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-bold mb-4">Tournament Control</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            🎯 Workflow: Start → League Matches → Losers Matches → Manage Teams in Groups → Play Group Matches → Knockout Stages
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <button
               onClick={() => executeTournamentAction("start")}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Start Tournament
+              1️⃣ Start Tournament
             </button>
             <button
               onClick={() => executeTournamentAction("complete_initial")}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Complete League Matches
+              2️⃣ Simulate/Done League
             </button>
             <button
               onClick={() => executeTournamentAction("progress_to_loser")}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Start Loser Matches
+              3️⃣ Start Loser Matches
             </button>
             <button
               onClick={() => executeTournamentAction("complete_loser")}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Complete Loser Matches
+              4️⃣ Done Loser Matches
             </button>
             <button
               onClick={() => executeTournamentAction("progress_to_group")}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Start Group Stage
+              5️⃣ Start Group Stage
             </button>
             <button
               onClick={() => executeTournamentAction("complete_group")}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Complete Group Matches
+              6️⃣ Done Group Matches
             </button>
             <button
               onClick={() => executeTournamentAction("progress_to_knockout")}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Start Quarterfinals
+              7️⃣ Start Quarterfinals
             </button>
             <button
               onClick={() => executeTournamentAction("complete_quarterfinals")}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Complete Quarterfinals
+              8️⃣ Done Quarterfinals
             </button>
             <button
               onClick={() => executeTournamentAction("progress_to_semifinals")}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Start Semifinals
+              9️⃣ Start Semifinals
             </button>
             <button
               onClick={() => executeTournamentAction("complete_semifinals")}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Complete Semifinals
+              🔟 Done Semifinals
             </button>
             <button
               onClick={() => executeTournamentAction("progress_to_final")}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Start Final
+              ♻️ Start Final
             </button>
             <button
               onClick={() => executeTournamentAction("complete_final")}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-semibold"
               disabled={loading}
             >
-              Complete Final
+              ✅ Complete Final
             </button>
           </div>
         </div>
@@ -218,6 +222,16 @@ export default function TournamentPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-bold mb-4">Tournament Stages</h2>
           <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCurrentStage("manage-teams")}
+              className={`px-4 py-2 rounded ${
+                currentStage === "manage-teams"
+                  ? "bg-indigo-500 text-white"
+                  : "bg-gray-300 hover:bg-gray-400"
+              }`}
+            >
+              Manage Teams
+            </button>
             <button
               onClick={() => setCurrentStage("league")}
               className={`px-4 py-2 rounded ${
@@ -283,18 +297,31 @@ export default function TournamentPage() {
 
         {/* Content Area */}
         <div>
+          {currentStage === "manage-teams" && tournament.teams && (
+            <TeamAssignment
+              allTeams={tournament.teams}
+              groups={tournament.groups || []}
+              onTeamsAssigned={async (updatedGroups) => {
+                console.log("Teams assigned to groups");
+                await fetchTournament(tournamentId);
+              }}
+            />
+          )}
+
           {currentStage === "league" && tournament.leagueMatches && (
-            <MatchTable
-              title="League Matches"
+            <MatchManagement
+              title="League Matches - Select a match to enter scores"
               matches={tournament.leagueMatches}
+              matchType="league"
               onMatchUpdate={updateMatchScore}
             />
           )}
 
           {currentStage === "loser" && tournament.loserMatches && (
-            <MatchTable
-              title="Losers Round Matches"
+            <MatchManagement
+              title="Losers Round - Select a match to enter scores"
               matches={tournament.loserMatches}
+              matchType="loser"
               onMatchUpdate={updateMatchScore}
             />
           )}
@@ -306,31 +333,35 @@ export default function TournamentPage() {
             ))}
 
           {currentStage === "quarterfinal" && tournament.knockoutMatches?.quarterfinals && (
-            <MatchTable
-              title="Quarterfinal Matches"
+            <MatchManagement
+              title="Quarterfinal Matches - Select a match to enter scores"
               matches={tournament.knockoutMatches.quarterfinals}
+              matchType="quarterfinal"
               onMatchUpdate={updateMatchScore}
             />
           )}
 
           {currentStage === "semifinal" && tournament.knockoutMatches?.semifinals && (
-            <MatchTable
-              title="Semifinal Matches"
+            <MatchManagement
+              title="Semifinal Matches - Select a match to enter scores"
               matches={tournament.knockoutMatches.semifinals}
+              matchType="semifinal"
               onMatchUpdate={updateMatchScore}
             />
           )}
 
           {currentStage === "final" && tournament.knockoutMatches?.final && (
             <>
-              <MatchTable
-                title="Final Match"
+              <MatchManagement
+                title="Final Match - Enter winning team and score"
                 matches={tournament.knockoutMatches.final.final}
+                matchType="final"
                 onMatchUpdate={updateMatchScore}
               />
-              <MatchTable
-                title="3rd Place Match"
+              <MatchManagement
+                title="3rd Place Match - Enter winning team and score"
                 matches={tournament.knockoutMatches.final.thirdPlace}
+                matchType="final"
                 onMatchUpdate={updateMatchScore}
               />
             </>
