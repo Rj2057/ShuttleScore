@@ -62,9 +62,6 @@ export function createTeam(id: string, name: string, player1: string, player2: s
     status: "active",
     totalPoints: 0,
     matchesPlayed: 0,
-    pointsFor: 0,
-    pointsAgainst: 0,
-    pointDifference: 0,
   };
 }
 
@@ -413,6 +410,7 @@ export function generateGroupMatches(group: Group): Match[] {
 
 /**
  * Calculate standings for a group
+ * Simple ranking: Total Wins > Head-to-Head
  */
 export function calculateGroupStandings(group: Group): GroupStanding[] {
   const standings: Map<string, GroupStanding> = new Map();
@@ -425,11 +423,7 @@ export function calculateGroupStandings(group: Group): GroupStanding[] {
       matchesPlayed: 0,
       wins: 0,
       losses: 0,
-      pointsFor: 0,
-      pointsAgainst: 0,
-      pointDifference: 0,
       totalPoints: 0,
-      headToHeadRecord: new Map(),
     });
   });
 
@@ -451,52 +445,18 @@ export function calculateGroupStandings(group: Group): GroupStanding[] {
         team2Standing.totalPoints++;
         team1Standing.losses++;
       }
-
-      team1Standing.pointsFor += match.result.team1Score;
-      team1Standing.pointsAgainst += match.result.team2Score;
-      team2Standing.pointsFor += match.result.team2Score;
-      team2Standing.pointsAgainst += match.result.team1Score;
-
-      // Calculate point difference
-      team1Standing.pointDifference = team1Standing.pointsFor - team1Standing.pointsAgainst;
-      team2Standing.pointDifference = team2Standing.pointsFor - team2Standing.pointsAgainst;
-
-      // Update head-to-head record
-      if (!team1Standing.headToHeadRecord!.has(match.team2.id)) {
-        team1Standing.headToHeadRecord!.set(match.team2.id, { pointsFor: 0, pointsAgainst: 0 });
-      }
-      if (!team2Standing.headToHeadRecord!.has(match.team1.id)) {
-        team2Standing.headToHeadRecord!.set(match.team1.id, { pointsFor: 0, pointsAgainst: 0 });
-      }
-
-      const h2h1 = team1Standing.headToHeadRecord!.get(match.team2.id)!;
-      const h2h2 = team2Standing.headToHeadRecord!.get(match.team1.id)!;
-
-      h2h1.pointsFor += match.result.team1Score;
-      h2h1.pointsAgainst += match.result.team2Score;
-      h2h2.pointsFor += match.result.team2Score;
-      h2h2.pointsAgainst += match.result.team1Score;
     }
   });
 
-  // Sort standings by: total points > point difference > direct head-to-head
+  // Sort standings by: total points (wins) descending
+  // In case of tie, position is preserved (fair for all teams)
   const sortedStandings = Array.from(standings.values()).sort((a, b) => {
-    // First: total points (descending)
+    // First: total points (wins) - descending
     if (a.totalPoints !== b.totalPoints) {
       return b.totalPoints - a.totalPoints;
     }
 
-    // Second: point difference (descending)
-    if (a.pointDifference !== b.pointDifference) {
-      return b.pointDifference - a.pointDifference;
-    }
-
-    // Third: points for (descending)
-    if (a.pointsFor !== b.pointsFor) {
-      return b.pointsFor - a.pointsFor;
-    }
-
-    // If all else is equal, keep original order
+    // If all tied, keep original order
     return 0;
   });
 

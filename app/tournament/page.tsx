@@ -4,7 +4,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import MatchManagement from "@/components/MatchManagement";
+import MatchSelector from "@/components/MatchSelector";
 import TeamAssignment from "@/components/TeamAssignment";
 import GroupStandings from "@/components/GroupStandings";
 
@@ -13,8 +13,8 @@ export default function TournamentPage() {
   const [tournament, setTournament] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [currentStage, setCurrentStage] = useState<
-    "league" | "loser" | "group" | "quarterfinal" | "semifinal" | "final" | "standings" | "manage-teams"
-  >("league");
+    "league" | "loser" | "group" | "quarterfinal" | "semifinal" | "final" | "standings" | "manage-teams" | "matches"
+  >("matches");
 
   // Initialize tournament
   useEffect(() => {
@@ -223,6 +223,16 @@ export default function TournamentPage() {
           <h2 className="text-xl font-bold mb-4">Tournament Stages</h2>
           <div className="flex flex-wrap gap-2">
             <button
+              onClick={() => setCurrentStage("matches")}
+              className={`px-4 py-2 rounded font-bold ${
+                currentStage === "matches"
+                  ? "bg-indigo-500 text-white"
+                  : "bg-gray-300 hover:bg-gray-400"
+              }`}
+            >
+              📋 All Matches
+            </button>
+            <button
               onClick={() => setCurrentStage("manage-teams")}
               className={`px-4 py-2 rounded ${
                 currentStage === "manage-teams"
@@ -230,27 +240,7 @@ export default function TournamentPage() {
                   : "bg-gray-300 hover:bg-gray-400"
               }`}
             >
-              Manage Teams
-            </button>
-            <button
-              onClick={() => setCurrentStage("league")}
-              className={`px-4 py-2 rounded ${
-                currentStage === "league"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              League ({tournament.leagueMatches?.length || 0})
-            </button>
-            <button
-              onClick={() => setCurrentStage("loser")}
-              className={`px-4 py-2 rounded ${
-                currentStage === "loser"
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              Losers ({tournament.loserMatches?.length || 0})
+              👥 Manage Teams
             </button>
             <button
               onClick={() => setCurrentStage("standings")}
@@ -260,43 +250,30 @@ export default function TournamentPage() {
                   : "bg-gray-300 hover:bg-gray-400"
               }`}
             >
-              Standings
-            </button>
-            <button
-              onClick={() => setCurrentStage("quarterfinal")}
-              className={`px-4 py-2 rounded ${
-                currentStage === "quarterfinal"
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              Quarterfinals
-            </button>
-            <button
-              onClick={() => setCurrentStage("semifinal")}
-              className={`px-4 py-2 rounded ${
-                currentStage === "semifinal"
-                  ? "bg-red-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              Semifinals
-            </button>
-            <button
-              onClick={() => setCurrentStage("final")}
-              className={`px-4 py-2 rounded ${
-                currentStage === "final"
-                  ? "bg-yellow-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              Final
+              📊 Standings
             </button>
           </div>
         </div>
 
         {/* Content Area */}
         <div>
+          {currentStage === "matches" && (
+            <MatchSelector
+              allMatches={{
+                league: tournament.leagueMatches || [],
+                loser: tournament.loserMatches || [],
+                group: tournament.groupMatches || [],
+                quarterfinal: tournament.knockoutMatches?.quarterfinals || [],
+                semifinal: tournament.knockoutMatches?.semifinals || [],
+                final: [
+                  ...(tournament.knockoutMatches?.final?.final || []),
+                  ...(tournament.knockoutMatches?.final?.thirdPlace || []),
+                ],
+              }}
+              onMatchUpdate={updateMatchScore}
+            />
+          )}
+
           {currentStage === "manage-teams" && tournament.teams && (
             <TeamAssignment
               allTeams={tournament.teams}
@@ -308,64 +285,11 @@ export default function TournamentPage() {
             />
           )}
 
-          {currentStage === "league" && tournament.leagueMatches && (
-            <MatchManagement
-              title="League Matches - Select a match to enter scores"
-              matches={tournament.leagueMatches}
-              matchType="league"
-              onMatchUpdate={updateMatchScore}
-            />
-          )}
-
-          {currentStage === "loser" && tournament.loserMatches && (
-            <MatchManagement
-              title="Losers Round - Select a match to enter scores"
-              matches={tournament.loserMatches}
-              matchType="loser"
-              onMatchUpdate={updateMatchScore}
-            />
-          )}
-
           {currentStage === "standings" &&
             tournament.groupStandings &&
             Object.entries(tournament.groupStandings).map(([group, standings]: [string, any]) => (
               <GroupStandings key={group} group={group.replace("Group ", "")} standings={standings} />
             ))}
-
-          {currentStage === "quarterfinal" && tournament.knockoutMatches?.quarterfinals && (
-            <MatchManagement
-              title="Quarterfinal Matches - Select a match to enter scores"
-              matches={tournament.knockoutMatches.quarterfinals}
-              matchType="quarterfinal"
-              onMatchUpdate={updateMatchScore}
-            />
-          )}
-
-          {currentStage === "semifinal" && tournament.knockoutMatches?.semifinals && (
-            <MatchManagement
-              title="Semifinal Matches - Select a match to enter scores"
-              matches={tournament.knockoutMatches.semifinals}
-              matchType="semifinal"
-              onMatchUpdate={updateMatchScore}
-            />
-          )}
-
-          {currentStage === "final" && tournament.knockoutMatches?.final && (
-            <>
-              <MatchManagement
-                title="Final Match - Enter winning team and score"
-                matches={tournament.knockoutMatches.final.final}
-                matchType="final"
-                onMatchUpdate={updateMatchScore}
-              />
-              <MatchManagement
-                title="3rd Place Match - Enter winning team and score"
-                matches={tournament.knockoutMatches.final.thirdPlace}
-                matchType="final"
-                onMatchUpdate={updateMatchScore}
-              />
-            </>
-          )}
         </div>
       </div>
     </div>

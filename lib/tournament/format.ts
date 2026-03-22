@@ -27,9 +27,6 @@ export interface FormattedGroupStanding {
   matchesPlayed: number;
   wins: number;
   losses: number;
-  pointsFor: number;
-  pointsAgainst: number;
-  pointDifference: number;
   totalPoints: number;
 }
 
@@ -67,9 +64,6 @@ export function formatGroupStandings(standings: GroupStanding[]): FormattedGroup
     matchesPlayed: standing.matchesPlayed,
     wins: standing.wins,
     losses: standing.losses,
-    pointsFor: standing.pointsFor,
-    pointsAgainst: standing.pointsAgainst,
-    pointDifference: standing.pointDifference,
     totalPoints: standing.totalPoints,
   }));
 }
@@ -228,12 +222,12 @@ export function exportTournamentAsCSV(tournament: Tournament): string {
   csv += `\n\nGroup Stage Standings\n`;
   tournament.groups.forEach((group) => {
     csv += `\nGroup ${group.name}\n`;
-    csv += `Position,Team,Matches,Wins,Losses,Points For,Points Against,Point Difference,Total Points\n`;
+    csv += `Position,Team,Matches,Wins,Losses,Total Points\n`;
     const standings = tournament.groups
       .find((g) => g.id === group.id)
       ?.standings.sort((a, b) => a.position - b.position);
     standings?.forEach((standing) => {
-      csv += `${standing.position},"${standing.team.name}",${standing.matchesPlayed},${standing.wins},${standing.losses},${standing.pointsFor},${standing.pointsAgainst},${standing.pointDifference},${standing.totalPoints}\n`;
+      csv += `${standing.position},"${standing.team.name}",${standing.matchesPlayed},${standing.wins},${standing.losses},${standing.totalPoints}\n`;
     });
   });
 

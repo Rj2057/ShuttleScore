@@ -10,9 +10,6 @@ interface Standing {
   matchesPlayed: number;
   wins: number;
   losses: number;
-  pointsFor: number;
-  pointsAgainst: number;
-  pointDifference: number;
   totalPoints: number;
 }
 
@@ -30,13 +27,10 @@ export default function GroupStandings({ group, standings }: GroupStandingsProps
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 px-4 py-2 text-left">POS</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">Team</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">TEAM</th>
               <th className="border border-gray-300 px-4 py-2 text-center">M</th>
               <th className="border border-gray-300 px-4 py-2 text-center">W</th>
               <th className="border border-gray-300 px-4 py-2 text-center">L</th>
-              <th className="border border-gray-300 px-4 py-2 text-center">PF</th>
-              <th className="border border-gray-300 px-4 py-2 text-center">PA</th>
-              <th className="border border-gray-300 px-4 py-2 text-center">PD</th>
               <th className="border border-gray-300 px-4 py-2 text-center">PTS</th>
             </tr>
           </thead>
@@ -61,16 +55,6 @@ export default function GroupStandings({ group, standings }: GroupStandingsProps
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {standing.losses}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {standing.pointsFor}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {standing.pointsAgainst}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {standing.pointDifference > 0 ? "+" : ""}
-                  {standing.pointDifference}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center font-bold">
                   {standing.totalPoints}

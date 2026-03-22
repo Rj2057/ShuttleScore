@@ -33,9 +33,6 @@ export interface Team {
   status: "active" | "eliminated" | "qualified";
   totalPoints?: number;
   matchesPlayed?: number;
-  pointsFor?: number;
-  pointsAgainst?: number;
-  pointDifference?: number;
 }
 
 export interface MatchResult {
@@ -71,11 +68,7 @@ export interface GroupStanding {
   matchesPlayed: number;
   wins: number;
   losses: number;
-  pointsFor: number;
-  pointsAgainst: number;
-  pointDifference: number;
   totalPoints: number;
-  headToHeadRecord?: Map<string, { pointsFor: number; pointsAgainst: number }>;
 }
 
 export interface Group {

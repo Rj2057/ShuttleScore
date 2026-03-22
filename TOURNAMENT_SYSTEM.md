@@ -38,10 +38,8 @@ This is a comprehensive full-stack tournament management system designed for bad
 - **Points System:** Win = 1 point, Loss = 0 points
 
 #### Ranking in Each Group (in order):
-1. Total points
-2. Head-to-head results
-3. Point difference (points for - points against)
-4. Points for (tiebreaker)
+1. Total points (matches won)
+2. Fair positioning
 
 ### Stage 5: Qualification
 - **Qualified Teams:** 8 (Top 2 from each group)
@@ -249,7 +247,6 @@ Displays group standings with:
 - Position (with qualification marker ✓ for top 2)
 - Team name
 - Matches played, wins, losses
-- Points for, against, difference
 - Total points
 - Color-coded qualified teams (green background)
 
