@@ -224,10 +224,10 @@ export async function randomGroupAssignmentExample() {
 }
 
 /**
- * EXAMPLE 6: Head-to-head tiebreaker demonstration
+ * EXAMPLE 6: Group standings demonstration
  */
 export async function headToHeadExample() {
-  console.log("\n=== Head-to-Head Tiebreaker Example ===\n");
+  console.log("\n=== Group Standings Example ===\n");
 
   const tournament = tournamentService.createSampleTournament();
   const id = tournament.id;
@@ -242,20 +242,14 @@ export async function headToHeadExample() {
 
   const finalTournament = tournamentService.getTournament(id)!;
 
-  console.log("Group Standings (with Head-to-Head consideration):\n");
+  console.log("Group Standings (wins-based ranking):\n");
   finalTournament.groups.forEach((group) => {
     console.log(`Group ${group.name}:`);
     group.standings
       .sort((a, b) => a.position - b.position)
       .forEach((standing) => {
-        const h2hInfo = standing.headToHeadRecord
-          ? Object.entries(standing.headToHeadRecord)
-              .map(([teamId, record]) => `vs ${teamId}: ${record.pointsFor}-${record.pointsAgainst}`)
-              .join("; ")
-          : "N/A";
-
         console.log(
-          `${standing.position}. ${standing.team.name}: ${standing.totalPoints}pts | PF: ${standing.pointsFor}, PA: ${standing.pointsAgainst}, PD: ${standing.pointDifference} | H2H: ${h2hInfo}`
+          `${standing.position}. ${standing.team.name}: ${standing.totalPoints}pts | W: ${standing.wins}, L: ${standing.losses}`
         );
       });
     console.log();

@@ -8,6 +8,8 @@ import MatchSelector from "@/components/MatchSelector";
 import TeamAssignment from "@/components/TeamAssignment";
 import GroupStandings from "@/components/GroupStandings";
 
+type MatchTypeValue = "league" | "loser" | "group" | "quarterfinal" | "semifinal" | "final";
+
 export default function TournamentPage() {
   const [tournamentId, setTournamentId] = useState<string>("");
   const [tournament, setTournament] = useState<any>(null);
@@ -82,6 +84,59 @@ export default function TournamentPage() {
       await fetchTournament(tournamentId);
     } catch (error) {
       console.error("Error updating match:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addTeamToTournament = async (
+    name: string,
+    player1Name: string,
+    player2Name: string
+  ) => {
+    try {
+      setLoading(true);
+      await fetch(`/api/tournament/${tournamentId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "add_team",
+          name,
+          player1Name,
+          player2Name,
+        }),
+      });
+
+      await fetchTournament(tournamentId);
+    } catch (error) {
+      console.error("Error adding team:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addManualMatch = async (payload: {
+    type: MatchTypeValue;
+    team1Id: string;
+    team2Id: string;
+    groupId?: string;
+    pointsPerSet: number;
+    bestOf: number;
+  }) => {
+    try {
+      setLoading(true);
+      await fetch(`/api/tournament/${tournamentId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "add_manual_match",
+          ...payload,
+        }),
+      });
+
+      await fetchTournament(tournamentId);
+    } catch (error) {
+      console.error("Error adding match:", error);
     } finally {
       setLoading(false);
     }
@@ -270,7 +325,11 @@ export default function TournamentPage() {
                   ...(tournament.knockoutMatches?.final?.thirdPlace || []),
                 ],
               }}
+              teams={tournament.teams || []}
+              groups={tournament.groups || []}
               onMatchUpdate={updateMatchScore}
+              onAddTeam={addTeamToTournament}
+              onAddMatch={addManualMatch}
             />
           )}
 

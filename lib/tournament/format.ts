@@ -238,11 +238,17 @@ export function exportTournamentAsCSV(tournament: Tournament): string {
  * Export as JSON for API responses
  */
 export function exportTournamentAsJSON(tournament: Tournament) {
+  const groupedMatches = getFormattedGroupMatches(tournament);
+  const flattenedGroupMatches = Object.values(groupedMatches).flat();
+
   return {
     tournament: getTournamentSummary(tournament),
+    teams: tournament.teams,
+    groups: tournament.groups,
     leagueMatches: getFormattedLeagueMatches(tournament),
     loserMatches: getFormattedLoserMatches(tournament),
-    groupMatches: getFormattedGroupMatches(tournament),
+    groupMatchesByGroup: groupedMatches,
+    groupMatches: flattenedGroupMatches,
     groupStandings: Object.fromEntries(
       tournament.groups.map((group) => [
         `Group ${group.name}`,

@@ -4,7 +4,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { tournamentService } from "@/lib/tournament/service";
-import { getTournamentSummary, exportTournamentAsJSON } from "@/lib/tournament/format";
+import { getTournamentSummary } from "@/lib/tournament/format";
+import { MatchType } from "@/lib/tournament/models";
 
 /**
  * POST /api/tournament/[id]/start
@@ -15,7 +16,8 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { action } = await request.json();
+    const body = await request.json();
+    const { action } = body;
 
     const tournament = tournamentService.getTournament(params.id);
     if (!tournament) {
@@ -71,6 +73,26 @@ export async function POST(
 
       case "complete_final":
         updated = tournamentService.completeFinal(params.id);
+        break;
+
+      case "add_team":
+        updated = tournamentService.addTeam(
+          params.id,
+          body.name || "",
+          body.player1Name || "",
+          body.player2Name || ""
+        );
+        break;
+
+      case "add_manual_match":
+        updated = tournamentService.addManualMatch(params.id, {
+          type: (body.type || "league") as MatchType,
+          team1Id: body.team1Id,
+          team2Id: body.team2Id,
+          groupId: body.groupId,
+          pointsPerSet: body.pointsPerSet,
+          bestOf: body.bestOf,
+        });
         break;
 
       default:

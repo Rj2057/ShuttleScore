@@ -8,6 +8,7 @@ import {
   Team,
   Match,
   MatchStatus,
+  MatchType,
   Group,
   GroupStanding,
   Player,
@@ -29,6 +30,55 @@ import {
 
 export class TournamentService {
   private tournaments: Map<string, Tournament> = new Map();
+
+  private createTbdTeam(label: string): Team {
+    const id = `TBD-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    return {
+      id,
+      name: label,
+      players: [],
+      status: "active",
+      totalPoints: 0,
+      matchesPlayed: 0,
+    };
+  }
+
+  private nextTeamId(tournament: Tournament): string {
+    const maxId = tournament.teams.reduce((max, team) => {
+      const num = Number(team.id.replace(/^T/, ""));
+      return Number.isFinite(num) ? Math.max(max, num) : max;
+    }, 0);
+
+    return `T${maxId + 1}`;
+  }
+
+  private nextMatchNumber(tournament: Tournament): number {
+    const allMatches = [
+      ...tournament.initialMatches,
+      ...tournament.loserMatches,
+      ...tournament.groups.flatMap((g) => g.matches),
+      ...tournament.quarterfinals,
+      ...tournament.semifinals,
+      ...tournament.final,
+      ...tournament.thirdPlace,
+    ];
+
+    const maxMatchNo = allMatches.reduce((max, match) => Math.max(max, match.matchNumber), 0);
+    return maxMatchNo + 1;
+  }
+
+  private findTeamById(tournament: Tournament, teamId: string, tbdLabel: string): Team {
+    if (teamId.startsWith("__TBD")) {
+      return this.createTbdTeam(tbdLabel);
+    }
+
+    const team = tournament.teams.find((t) => t.id === teamId);
+    if (!team) {
+      throw new Error(`Team ${teamId} not found`);
+    }
+
+    return team;
+  }
 
   /**
    * Create a new tournament with 20 teams
@@ -107,6 +157,14 @@ export class TournamentService {
       throw new Error("Match not found");
     }
 
+    if (match.team1.id.startsWith("TBD-") || match.team2.id.startsWith("TBD-")) {
+      throw new Error("Cannot set result when one team is TBD. Replace TBD with actual teams first.");
+    }
+
+    if (team1Score === team2Score) {
+      throw new Error("Match score cannot be tied");
+    }
+
     const isTeam1Winner = team1Score > team2Score;
     match.status = MatchStatus.COMPLETED;
     match.result = {
@@ -117,6 +175,159 @@ export class TournamentService {
     };
     match.completedTime = new Date();
 
+    this.tournaments.set(tournamentId, tournament);
+    return tournament;
+  }
+
+  addTeam(
+    tournamentId: string,
+    name: string,
+    player1Name: string,
+    player2Name: string
+  ): Tournament {
+    const tournament = this.getTournament(tournamentId);
+    if (!tournament) {
+      throw new Error("Tournament not found");
+    }
+
+    if (!name.trim() || !player1Name.trim() || !player2Name.trim()) {
+      throw new Error("Team name and both player names are required");
+    }
+
+    const teamId = this.nextTeamId(tournament);
+    const team = createTeam(teamId, name.trim(), player1Name.trim(), player2Name.trim());
+
+    tournament.teams.push(team);
+    tournament.totalTeams = tournament.teams.length;
+    tournament.updatedAt = new Date();
+
+    this.tournaments.set(tournamentId, tournament);
+    return tournament;
+  }
+
+  addManualMatch(
+    tournamentId: string,
+    payload: {
+      type: MatchType;
+      team1Id: string;
+      team2Id: string;
+      groupId?: string;
+      pointsPerSet?: number;
+      bestOf?: number;
+    }
+  ): Tournament {
+    const tournament = this.getTournament(tournamentId);
+    if (!tournament) {
+      throw new Error("Tournament not found");
+    }
+
+    if (payload.team1Id === payload.team2Id) {
+      throw new Error("Team 1 and Team 2 must be different");
+    }
+
+    const team1 = this.findTeamById(tournament, payload.team1Id, "TBD");
+    const team2 = this.findTeamById(tournament, payload.team2Id, "TBD");
+
+    if (payload.type === MatchType.GROUP) {
+      if (!payload.groupId) {
+        throw new Error("groupId is required for group matches");
+      }
+
+      const group = tournament.groups.find((g) => g.id === payload.groupId);
+      if (!group) {
+        throw new Error("Selected group not found");
+      }
+
+      const inGroupTeam1 = group.teams.some((t) => t.id === team1.id);
+      const inGroupTeam2 = group.teams.some((t) => t.id === team2.id);
+      if (!inGroupTeam1 || !inGroupTeam2) {
+        throw new Error("For group matches, both teams must be selected from the same group");
+      }
+
+      const match: Match = {
+        id: `G${group.name}-M${group.matches.length + 1}`,
+        type: MatchType.GROUP,
+        matchNumber: this.nextMatchNumber(tournament),
+        team1,
+        team2,
+        status: MatchStatus.PENDING,
+        bestOf: payload.bestOf || 1,
+        pointsPerSet: payload.pointsPerSet || 15,
+      };
+
+      group.matches.push(match);
+      tournament.updatedAt = new Date();
+      this.tournaments.set(tournamentId, tournament);
+      return tournament;
+    }
+
+    const pointsPerSetByType: Record<MatchType, number> = {
+      [MatchType.LEAGUE]: 15,
+      [MatchType.LOSER]: 11,
+      [MatchType.GROUP]: 15,
+      [MatchType.QUARTERFINAL]: 21,
+      [MatchType.SEMIFINAL]: 21,
+      [MatchType.FINAL]: 21,
+      [MatchType.THIRD_PLACE]: 21,
+    };
+
+    const targetPoints = payload.pointsPerSet || pointsPerSetByType[payload.type] || 21;
+    const matchNumber = this.nextMatchNumber(tournament);
+
+    const getMatchId = () => {
+      switch (payload.type) {
+        case MatchType.LEAGUE:
+          return `ML${tournament.initialMatches.length + 1}`;
+        case MatchType.LOSER:
+          return `LM${tournament.loserMatches.length + 1}`;
+        case MatchType.QUARTERFINAL:
+          return `QF${tournament.quarterfinals.length + 1}`;
+        case MatchType.SEMIFINAL:
+          return `SF${tournament.semifinals.length + 1}`;
+        case MatchType.FINAL:
+          return `F${tournament.final.length + 1}`;
+        case MatchType.THIRD_PLACE:
+          return `TP${tournament.thirdPlace.length + 1}`;
+        default:
+          return `M${matchNumber}`;
+      }
+    };
+
+    const manualMatch: Match = {
+      id: getMatchId(),
+      type: payload.type,
+      matchNumber,
+      team1,
+      team2,
+      status: MatchStatus.PENDING,
+      bestOf: payload.bestOf || 1,
+      pointsPerSet: targetPoints,
+    };
+
+    switch (payload.type) {
+      case MatchType.LEAGUE:
+        tournament.initialMatches.push(manualMatch);
+        break;
+      case MatchType.LOSER:
+        tournament.loserMatches.push(manualMatch);
+        break;
+      case MatchType.QUARTERFINAL:
+        tournament.quarterfinals.push(manualMatch);
+        break;
+      case MatchType.SEMIFINAL:
+        tournament.semifinals.push(manualMatch);
+        break;
+      case MatchType.FINAL:
+        tournament.final.push(manualMatch);
+        break;
+      case MatchType.THIRD_PLACE:
+        tournament.thirdPlace.push(manualMatch);
+        break;
+      default:
+        throw new Error(`Unsupported match type: ${payload.type}`);
+    }
+
+    tournament.updatedAt = new Date();
     this.tournaments.set(tournamentId, tournament);
     return tournament;
   }
