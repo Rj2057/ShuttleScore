@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:mobile": "next dev -H 0.0.0.0",
-    "build": "next build",
+    "clean:next": "node scripts/clean-next.mjs",
+    "dev": "npm run clean:next && next dev",
+    "dev:mobile": "npm run clean:next && next dev -H 0.0.0.0",
+    "build": "npm run clean:next && next build",
     "start": "next start",
     "lint": "next lint"
   },

@@ -1,13 +1,32 @@
 export type MatchStage = "group" | "quarter" | "semi" | "final";
 export type MatchStatus = "scheduled" | "live" | "completed";
 export type MatchFormat = "bo1" | "bo3";
+export type WinMode = "target_score" | "force_end";
+
+export interface TournamentSettings {
+  points_to_win: number;
+  win_margin: number;
+  max_points: number;
+  match_format: MatchFormat;
+  win_mode: WinMode;
+}
+
+export interface Profile {
+  id: string;
+  display_name: string | null;
+  created_at: string;
+}
 
 export interface Tournament {
   id: string;
+  organizer_id: string;
   name: string;
+  slug: string;
   season: string;
   start_date: string;
   end_date: string;
+  is_public: boolean;
+  settings: TournamentSettings;
   created_at: string;
 }
 
@@ -20,6 +39,7 @@ export interface Group {
 
 export interface Team {
   id: string;
+  tournament_id: string;
   group_id: string | null;
   name: string;
   created_at: string;
