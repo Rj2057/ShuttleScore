@@ -1,6 +1,0 @@
-{
-  "/referee/[matchId]/page": "app/referee/[matchId]/page.js",
-  "/api/matches/[id]/update-score/route": "app/api/matches/[id]/update-score/route.js",
-  "/api/referee/update/route": "app/api/referee/update/route.js",
-  "/dashboard/[id]/page": "app/dashboard/[id]/page.js"
-}
