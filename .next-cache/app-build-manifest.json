@@ -1,45 +1,35 @@
 {
   "pages": {
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/live/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/live/page.js"
+      "static/chunks/app/page.js"
     ],
-    "/live/layout": [
+    "/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/live/layout.js"
+      "static/chunks/app/dashboard/page.js"
     ],
-    "/admin/(dashboard)/page": [
+    "/dashboard/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/(dashboard)/page.js"
+      "static/chunks/app/dashboard/layout.js"
     ],
-    "/admin/(dashboard)/layout": [
+    "/dashboard/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/(dashboard)/layout.js"
+      "static/chunks/app/dashboard/[id]/page.js"
     ],
-    "/admin/layout": [
+    "/t/[slug]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/layout.js"
-    ],
-    "/admin/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/login/page.js"
+      "static/chunks/app/t/[slug]/page.js"
     ]
   }
 }

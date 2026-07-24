@@ -82,7 +82,7 @@ export default function CreateTournamentPage() {
       return;
     }
 
-    router.push(`/dashboard/${data.id}/scores`);
+    router.push(`/dashboard/${data.id}`);
   }
 
   return (

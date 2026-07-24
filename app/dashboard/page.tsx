@@ -58,7 +58,7 @@ export default async function DashboardPage() {
                   Public view
                 </Link>
                 <Link
-                  href={`/dashboard/${t.id}/scores`}
+                  href={`/dashboard/${t.id}`}
                   className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm"
                 >
                   Enter scores
