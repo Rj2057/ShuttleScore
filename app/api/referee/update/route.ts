@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { matchId, pin, score1, score2 } = await req.json();
+    const body = await req.json();
+    const { matchId, pin, score1, score2, status, winner_id } = body;
 
     if (!matchId || !pin) {
       return NextResponse.json({ error: "Missing matchId or pin" }, { status: 400 });
@@ -37,14 +38,20 @@ export async function POST(req: Request) {
     }
 
     // 2. Update Score
+    const updatePayload: any = {
+      score1,
+      score2,
+      status: status || "live",
+      updated_at: new Date().toISOString(),
+    };
+
+    if (winner_id) {
+      updatePayload.winner_id = winner_id;
+    }
+
     const { error: updateError } = await supabase
       .from("matches")
-      .update({
-        score1,
-        score2,
-        status: "live",
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("id", matchId);
 
     if (updateError) {

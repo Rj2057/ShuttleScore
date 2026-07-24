@@ -17,6 +17,7 @@ export function TournamentPublicView({ tournamentId }: TournamentPublicViewProps
 
   const leagueMatches = matches.filter((m) => m.stage === "group");
   const playoffMatches = matches.filter((m) => ["quarter", "semi", "final"].includes(m.stage));
+  const exhibitionMatches = matches.filter((m) => !["group", "quarter", "semi", "final"].includes(m.stage));
   const liveMatches = matches.filter((m) => m.status === "live");
 
   const teamsByGroup = (groupId: string) =>
@@ -83,6 +84,17 @@ export function TournamentPublicView({ tournamentId }: TournamentPublicViewProps
           <h2 className="text-lg font-display font-semibold text-white mb-4">Playoffs</h2>
           <div className="rounded-xl border border-slate-600/80 bg-slate-900/30 p-4">
             <PlayoffBracket matches={playoffMatches} />
+          </div>
+        </section>
+      )}
+
+      {exhibitionMatches.length > 0 && (
+        <section>
+          <h2 className="text-lg font-display font-semibold text-white mb-4">Matches</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {exhibitionMatches.map((m) => (
+              <MatchCard key={m.id} match={m} />
+            ))}
           </div>
         </section>
       )}

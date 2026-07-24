@@ -1,16 +1,49 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LiveScorer from "./LiveScorer";
 import EditMatchModal from "./EditMatchModal";
+import { createClient } from "@/lib/supabase/client";
 
 export default function MatchManager({ tournamentId, initialMatches, teams }: { tournamentId: string, initialMatches: any[], teams: any[] }) {
-  const [matches, setMatches] = useState(initialMatches);
-  const [activeMatch, setActiveMatch] = useState<any | null>(null);
-  const [editingMatch, setEditingMatch] = useState<any | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const autoStartId = searchParams.get("startMatch");
+
+  const [matches, setMatches] = useState(initialMatches);
+
+  useEffect(() => {
+    setMatches(initialMatches);
+  }, [initialMatches]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`matches-manager-${tournamentId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "matches",
+          filter: `tournament_id=eq.${tournamentId}`,
+        },
+        () => {
+          router.refresh();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tournamentId, router]);
+  const [activeMatch, setActiveMatch] = useState<any | null>(
+    autoStartId ? initialMatches.find(m => m.id === autoStartId) || null : null
+  );
+  const [editingMatch, setEditingMatch] = useState<any | null>(null);
 
   // Group matches by stage for better display
   const groupedMatches = matches.reduce((acc, m) => {
@@ -40,6 +73,7 @@ export default function MatchManager({ tournamentId, initialMatches, teams }: { 
 
   const handleCloseScorer = () => {
     setActiveMatch(null);
+    router.push(`/dashboard/${tournamentId}?tab=matches`);
     router.refresh(); // Refresh data to show latest scores and statuses
   };
 

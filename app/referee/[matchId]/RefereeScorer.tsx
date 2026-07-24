@@ -64,6 +64,34 @@ export default function RefereeScorer({ initialMatch, pin }: { initialMatch: any
     }
   };
 
+  const handleFinish = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+    const winnerId = match.score1 > match.score2 ? match.team1_id : match.team2_id;
+    
+    try {
+      await fetch(`/api/referee/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matchId: match.id,
+          pin,
+          score1: match.score1,
+          score2: match.score2,
+          status: "completed",
+          winner_id: winnerId
+        })
+      });
+      // Optionally close the window or show a success message
+      alert("Match completed and saved securely!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to complete match");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="min-h-[100dvh] bg-slate-950 flex flex-col font-display">
       {/* Header */}
@@ -131,9 +159,14 @@ export default function RefereeScorer({ initialMatch, pin }: { initialMatch: any
       </div>
       
       {/* Footer Controls */}
-      <div className="bg-slate-900 p-4 border-t border-slate-800 flex justify-between gap-4">
-         <button className="flex-1 py-4 bg-slate-800 rounded-xl text-white font-bold hover:bg-slate-700">End Game</button>
-         <button className="flex-1 py-4 bg-court-600 rounded-xl text-white font-bold hover:bg-court-500">Complete Match</button>
+      <div className="bg-slate-900 p-4 border-t border-slate-800 flex justify-center gap-4">
+         <button 
+           onClick={handleFinish}
+           disabled={isUpdating}
+           className="w-full md:w-1/2 py-4 bg-red-600 rounded-xl text-white font-black tracking-widest hover:bg-red-500 disabled:opacity-50 transition shadow-lg shadow-red-600/20"
+         >
+           FINISH MATCH
+         </button>
       </div>
     </div>
   );
