@@ -10,7 +10,6 @@ import { createClient } from "@/lib/supabase/client";
 export default function MatchManager({ tournamentId, initialMatches, teams }: { tournamentId: string, initialMatches: any[], teams: any[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const autoStartId = searchParams.get("startMatch");
 
   const [matches, setMatches] = useState(initialMatches);
 
@@ -40,9 +39,7 @@ export default function MatchManager({ tournamentId, initialMatches, teams }: { 
       supabase.removeChannel(channel);
     };
   }, [tournamentId, router]);
-  const [activeMatch, setActiveMatch] = useState<any | null>(
-    autoStartId ? initialMatches.find(m => m.id === autoStartId) || null : null
-  );
+  const [activeMatch, setActiveMatch] = useState<any | null>(null);
   const [editingMatch, setEditingMatch] = useState<any | null>(null);
 
   // Group matches by stage for better display
