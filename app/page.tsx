@@ -54,6 +54,7 @@ export default function HomePage() {
             <p className="text-slate-400">Generate secure, single-match PINs for court-side referees to score games on their phones.</p>
           </div>
         </div>
+        </div>
       </div>
     </main>
   );

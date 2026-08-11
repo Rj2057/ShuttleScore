@@ -106,7 +106,7 @@ export default function MatchManager({ tournamentId, initialMatches, teams }: { 
           No matches found. Switch to the AI Architect Builder tab to generate a tournament.
         </div>
       ) : (
-        Object.entries(groupedMatches).map(([stage, stageMatches]) => (
+        (Object.entries(groupedMatches) as [string, any[]][]).map(([stage, stageMatches]) => (
           <div key={stage} className="bg-slate-900 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
             <div className="bg-slate-800/50 px-6 py-4 border-b border-slate-700">
               <h3 className="text-lg font-bold text-white capitalize">{stage}</h3>
