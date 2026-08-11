@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { getSiteUrl, siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Lakshmi Hegde PG Badminton Tournament | Season 2",
-  description: "Live scores, brackets & match updates",
+  metadataBase: new URL(getSiteUrl()),
+  title: siteConfig.title,
+  description: siteConfig.description,
 };
 
 export const viewport: Viewport = {

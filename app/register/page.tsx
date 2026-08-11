@@ -12,9 +12,17 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const passwordPolicy = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    if (!passwordPolicy.test(password)) {
+      setError("Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.");
+      return;
+    }
+
     setLoading(true);
 
     const supabase = createClient();
@@ -95,10 +103,14 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$"
                 className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-600 text-white placeholder-slate-500 focus:outline-none focus:border-court-500"
-                placeholder="At least 6 characters"
+                placeholder="8+ chars, upper, lower, number, special"
               />
+              <p className="mt-1 text-xs text-slate-500">
+                Use at least 8 characters with uppercase, lowercase, a number, and a special character.
+              </p>
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
