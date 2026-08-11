@@ -23,10 +23,7 @@ export default function QuickMatchModal({ onClose }: { onClose: () => void }) {
       });
       const data = await res.json();
       if (data.success) {
-        // Redirect directly to that new tournament's match tab. 
-        // We will pass an autoStart query param so the MatchManager can pop the live scorer open instantly if we wanted to.
-        // For now, just routing to the dashboard matches tab is fast enough.
-        router.push(`/dashboard/${data.tournamentId}?tab=matches&startMatch=${data.matchId}`);
+        router.push(`/referee/${data.matchId}?pin=${data.pin}`);
       } else {
         alert("Failed: " + data.error);
         setIsCreating(false);

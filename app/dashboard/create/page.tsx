@@ -91,7 +91,7 @@ export default function CreateTournamentPage() {
         ← Back
       </Link>
       <h1 className="font-display text-3xl font-bold text-white mb-2">Create Tournament</h1>
-      <p className="text-slate-400 text-sm mb-6">Manual setup — AI builder coming next</p>
+      <p className="text-slate-400 text-sm mb-6">Manual setup for tournament scoring</p>
 
       <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-slate-700 bg-slate-800/80 p-6">
         <div>

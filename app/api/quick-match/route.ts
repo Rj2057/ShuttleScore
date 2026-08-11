@@ -29,6 +29,8 @@ export async function POST(req: Request) {
 
     if (tError || !tournament) throw tError || new Error("Failed to create tournament");
 
+    const refereePin = Math.floor(100000 + Math.random() * 900000).toString();
+
     // 2. Create the two teams
     const { data: teams, error: teamsError } = await supabase
       .from("teams")
@@ -52,7 +54,8 @@ export async function POST(req: Request) {
         match_format: format,
         team1_id: team1?.id,
         team2_id: team2?.id,
-        status: "scheduled"
+        status: "scheduled",
+        referee_pin: refereePin
       })
       .select("id")
       .single();
@@ -62,7 +65,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ 
       success: true, 
       tournamentId: tournament.id,
-      matchId: match.id 
+      matchId: match.id,
+      pin: refereePin
     });
 
   } catch (err: any) {
