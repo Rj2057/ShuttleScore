@@ -42,6 +42,7 @@ export interface Team {
   tournament_id: string;
   group_id: string | null;
   name: string;
+  code?: string | null;
   created_at: string;
 }
 

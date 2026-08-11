@@ -42,6 +42,17 @@ export default function MatchManager({ tournamentId, initialMatches, teams }: { 
   const [activeMatch, setActiveMatch] = useState<any | null>(null);
   const [editingMatch, setEditingMatch] = useState<any | null>(null);
 
+  useEffect(() => {
+    const startMatchId = searchParams.get("startMatch");
+    if (!startMatchId || activeMatch) return;
+
+    const matchToStart = matches.find((m) => m.id === startMatchId);
+    if (matchToStart) {
+      setActiveMatch(matchToStart);
+      router.replace(`/dashboard/${tournamentId}?tab=matches`);
+    }
+  }, [searchParams, matches, activeMatch, router, tournamentId]);
+
   // Group matches by stage for better display
   const groupedMatches = matches.reduce((acc, m) => {
     const stage = m.stage || "other";

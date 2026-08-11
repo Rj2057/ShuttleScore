@@ -58,7 +58,12 @@ export default function AdminTeamsPage() {
     if (!newTeamName.trim()) return;
     const { data } = await supabase
       .from("teams")
-      .insert({ name: newTeamName.trim(), group_id: selectedGroup || null })
+      .insert({
+        tournament_id: selectedTournament,
+        name: newTeamName.trim(),
+        code: newTeamName.trim().substring(0, 3).toUpperCase(),
+        group_id: selectedGroup || null,
+      })
       .select()
       .single();
     if (data) setTeams((t) => [...t, data]);

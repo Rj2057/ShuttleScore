@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       .from("matches")
       .insert({
         tournament_id: tournament.id,
-        stage: "Exhibition",
+        stage: "group",
         match_format: format,
         team1_id: team1?.id,
         team2_id: team2?.id,

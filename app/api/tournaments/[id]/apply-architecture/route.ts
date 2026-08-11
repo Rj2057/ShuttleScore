@@ -69,6 +69,7 @@ export async function POST(
       const teamsToInsert = tournamentData.teams.map((t: any) => ({
         tournament_id: tournamentId,
         name: t.name,
+        code: t.code || t.name.substring(0, 3).toUpperCase(),
         group_id: t.group_id ? groupMap.get(t.group_id) || null : null
       }));
 

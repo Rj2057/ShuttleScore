@@ -54,6 +54,7 @@ CREATE TABLE teams (
   tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
   group_id UUID REFERENCES groups(id) ON DELETE SET NULL,
   name TEXT NOT NULL,
+  code TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
